@@ -53,15 +53,15 @@ def format_timestamp(seconds, vtt=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Whisper transcription with selectable output formats.")
-    parser.add_argument("--audio", required=True, help="Audio filename (will look in inputs folder).")
+    parser.add_argument("--audio", required=True, help="Path to audio file.")
     parser.add_argument("--model", default=os.getenv("WHISPER_MODEL", "small.en"), help="Whisper model size (default from .env or small.en)")
     parser.add_argument("--language", default=os.getenv("WHISPER_LANGUAGE"), help="Language code (e.g. 'en', 'bn') - default from .env or auto-detect.")
     parser.add_argument("--task", default=os.getenv("WHISPER_TASK", "transcribe"), choices=["transcribe", "translate"], help="Task type (default from .env or transcribe).")
     parser.add_argument("--formats", default=os.getenv("WHISPER_FORMATS", "txt"), help="Comma-separated output formats: srt,tsv,txt,vtt,json (default from .env or txt)")
     args = parser.parse_args()
 
-    # Construct full path to audio file in inputs folder
-    audio_path = os.path.join("inputs", args.audio)
+    # Use the audio path directly
+    audio_path = args.audio
     
     # Check if the audio file exists
     if not os.path.exists(audio_path):
