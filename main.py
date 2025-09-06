@@ -1,6 +1,7 @@
 import argparse
 import whisper
 import os
+import torch
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -51,6 +52,33 @@ def format_timestamp(seconds, vtt=False):
     else:
         return f"{hours:02}:{minutes:02}:{secs:02},{millis:03}"
 
+def get_device(preferred_device=None):
+    """Detect and return the best available device for inference."""
+    if preferred_device and preferred_device.lower() != "auto":
+        if preferred_device.lower() == "cuda" and torch.cuda.is_available():
+            device = "cuda"
+            gpu_name = torch.cuda.get_device_name(0)
+            gpu_memory = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+            print(f"🚀 Using CUDA GPU: {gpu_name} ({gpu_memory:.1f}GB)")
+        elif preferred_device.lower() == "cpu":
+            device = "cpu"
+            print(f"💻 Using CPU (forced)")
+        else:
+            print(f"⚠️  Requested device '{preferred_device}' not available, falling back to CPU")
+            device = "cpu"
+            print(f"💻 Using CPU")
+    else:
+        # Auto-detection - only CUDA or CPU
+        if torch.cuda.is_available():
+            device = "cuda"
+            gpu_name = torch.cuda.get_device_name(0)
+            gpu_memory = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+            print(f"🚀 CUDA GPU detected: {gpu_name} ({gpu_memory:.1f}GB)")
+        else:
+            device = "cpu"
+            print(f"💻 Using CPU (no CUDA GPU detected)")
+    return device
+
 def main():
     parser = argparse.ArgumentParser(description="Whisper transcription with selectable output formats.")
     parser.add_argument("--audio", required=True, help="Path to audio file.")
@@ -58,6 +86,7 @@ def main():
     parser.add_argument("--language", default=os.getenv("WHISPER_LANGUAGE"), help="Language code (e.g. 'en', 'bn') - default from .env or auto-detect.")
     parser.add_argument("--task", default=os.getenv("WHISPER_TASK", "transcribe"), choices=["transcribe", "translate"], help="Task type (default from .env or transcribe).")
     parser.add_argument("--formats", default=os.getenv("WHISPER_FORMATS", "txt"), help="Comma-separated output formats: srt,tsv,txt,vtt,json (default from .env or txt)")
+    parser.add_argument("--device", default=os.getenv("WHISPER_DEVICE", "auto"), choices=["auto", "cuda", "cpu"], help="Device to use for inference (default from .env or auto)")
     args = parser.parse_args()
 
     # Use the audio path directly
@@ -68,16 +97,32 @@ def main():
         print(f"Error: Audio file '{audio_path}' not found.")
         return
 
+    # Detect best available device
+    device = get_device(args.device)
+    
     # Display configuration
     print(f"Configuration:")
     print(f"  Audio file: {audio_path}")
     print(f"  Model: {args.model}")
+    print(f"  Device: {device}")
     print(f"  Language: {args.language or 'auto-detect'}")
     print(f"  Task: {args.task}")
     print(f"  Formats: {args.formats}")
     print()
 
-    model = whisper.load_model(args.model)
+    print(f"Loading model '{args.model}' on {device}...")
+    try:
+        model = whisper.load_model(args.model, device=device)
+    except Exception as e:
+        if device == "cuda":
+            print(f"⚠️  Failed to load model on CUDA: {str(e)[:100]}...")
+            print(f"🔄 Falling back to CPU...")
+            device = "cpu"
+            model = whisper.load_model(args.model, device=device)
+        else:
+            raise e
+    
+    print(f"Starting transcription...")
     result = model.transcribe(audio_path, language=args.language, task=args.task)
     segments = result["segments"]
     
