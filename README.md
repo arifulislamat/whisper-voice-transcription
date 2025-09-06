@@ -74,8 +74,8 @@ This projects provides a streamlined interface for transcribing audio files usin
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
-   cd uv-whisper-py13
+   git clone https://github.com/arifulislamat/whisper-voice-transcription.git
+   cd whisper-voice-transcription
    ```
 
 2. **Install dependencies using uv (recommended):**
