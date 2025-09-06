@@ -1,10 +1,10 @@
-# Whisper Transcription Tool
+# Whisper Voice Transcription
 
-A Python-based audio transcription tool using OpenAI's Whisper model with configurable output formats, GPU acceleration, and automated file organization.
+A Python-based audio transcription tool (STT) using OpenAI's Whisper model with configurable output formats and automated file organization.
 
 ## 🎯 Project Overview
 
-This tool provides a streamlined interface for transcribing audio files using OpenAI's Whisper speech recognition model. It supports multiple output formats, automatic file organization with timestamps, environment-based configuration, and NVIDIA CUDA acceleration for faster processing.
+This projects provides a streamlined interface for transcribing audio files using OpenAI's Whisper speech recognition model. It supports multiple output formats, automatic file organization with timestamps, environment-based configuration, and NVIDIA CUDA acceleration for faster processing.
 
 ### ✨ Features
 
