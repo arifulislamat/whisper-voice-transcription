@@ -110,15 +110,6 @@ WHISPER_FORMATS=srt,txt,json
 WHISPER_DEVICE=auto
 ```
 
-### Available Options
-
-| Parameter          | Description        | Options                                             | Default      |
-| ------------------ | ------------------ | --------------------------------------------------- | ------------ |
-| `WHISPER_MODEL`    | Whisper model size | `tiny`, `base`, `small`, `medium`, `small.en` `...` |              |
-| `WHISPER_LANGUAGE` | Language code      | `en`, `es`, `fr`, `de`, `bn`, etc.                  | auto-detect  |
-| `WHISPER_TASK`     | Processing task    | `transcribe`, `translate`                           | `transcribe` |
-| `WHISPER_FORMATS`  | Output formats     | `srt`, `txt`, `json`, `vtt`, `tsv`                  | `txt`        |
-
 ## 🎵 Whisper Models
 
 ### Model Sizes & Performance
