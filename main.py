@@ -413,9 +413,20 @@ def launch_gradio_interface():
                     label="🏋️‍♂️ Model Sizes"
                 )
                 
+                # Determine default language for dropdown
+                language_mapping = get_language_mapping()
+                env_language_code = os.getenv("WHISPER_LANGUAGE", "auto")
+                # Find display name for env_language_code
+                default_language_display = None
+                for display, code in language_mapping.items():
+                    if code == env_language_code:
+                        default_language_display = display
+                        break
+                if not default_language_display:
+                    default_language_display = "Auto Detect"
                 language_input = gr.Dropdown(
-                    choices=list(get_language_mapping().keys()),
-                    value="Auto Detect",
+                    choices=list(language_mapping.keys()),
+                    value=default_language_display,
                     label="🌍 Language"
                 )
                 task_input = gr.Radio(
