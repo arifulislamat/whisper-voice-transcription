@@ -151,7 +151,7 @@ To share the interface out of your home network:
 
 > **Note:** Use `--web` flag to launch the intuitive web interface - no other arguments needed!
 
-### ⌨️ Option 1: CLI - Command Line Interface
+### ⌨️ Option 2: CLI - Command Line Interface
 
 1. Prepare Audio Files
 
