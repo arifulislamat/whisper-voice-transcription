@@ -92,6 +92,65 @@ This project provides a streamlined interface for transcribing audio files using
 
 You can use this tool in two ways: **Web Interface** (easiest) or **Command Line** (for automation).
 
+### 🌐 Option 1: Web Interface (Recommended for beginners)
+
+This project now includes a user-friendly web interface powered by Gradio, perfect for non-technical users or quick transcriptions.
+
+### Launch Web Interface
+
+    ```bash
+    uv run python main.py --web
+    ```
+
+This will start a web server (usually at `http://127.0.0.1:7860`) where you can:
+
+- **Upload audio files** via drag-and-drop or file picker
+- **Select Whisper model** from dropdown (tiny.en, base.en, small.en, medium.en, large, turbo)
+- **Choose language** (auto-detect or specific language)
+- **Pick output formats** (multiple selection: SRT, TXT, JSON, VTT, TSV)
+- **Set device preference** (auto, CUDA, CPU)
+- **Start Transcription** directly from the browser
+
+### Web Interface Features
+
+- **Drag & Drop Audio Upload**: Upload audio files directly in your browser
+- **Live Configuration**: Adjust settings with dropdowns and checkboxes
+- **Real-time Feedback**: See transcription progress and results instantly
+- **Multi-format Download**: Get results in ZIP files for multiple formats
+- **Mobile-friendly**: Responsive design works on phones and tablets
+- **Same Configuration**: Uses your `.env` settings as defaults
+- **No installation needed** for end users - just share the web link
+
+### Interface Sections
+
+#### Audio Input Section
+
+- **Upload Area**: Supports MP3, WAV, M4A, FLAC, and more
+- **Sample Files**: Use provided english-voice-example.mp3 or bangla-voice-example.mp3 ( need to copy them into inputs dir)
+
+#### Configuration Panel
+
+- **Whisper Model Size**: Choose from tiny.en (fast) to large (most accurate)
+- **Language**: Auto-detect or select from 15+ languages
+- **Task**: Transcribe in original language or translate to English
+- **Output Formats**: Select multiple formats (packaged in ZIP)
+- **Processing Device**: Auto-detect GPU or force CPU
+
+#### Results Section
+
+- **Status Display**: Real-time progress and configuration summary
+- **Output Location**: All files saved in timestamped `outputs/` folders
+
+### Advanced Web Interface Usage
+
+#### Public Access
+
+To share the interface out of your home network:
+
+`Set GRADIO_SHARE=true in .env`
+
+> **Note:** Use `--web` flag to launch the intuitive web interface - no other arguments needed!
+
 ### ⌨️ Option 1: CLI - Command Line Interface
 
 1. Prepare Audio Files
@@ -99,6 +158,7 @@ You can use this tool in two ways: **Web Interface** (easiest) or **Command Line
    Place your audio files in the `inputs/` folder:
 
    ```bash
+   mkdir inputs
    cp english-voice-example.mp3 inputs/
    ```
 
@@ -110,28 +170,7 @@ You can use this tool in two ways: **Web Interface** (easiest) or **Command Line
    uv run python main.py --audio english-voice-example.mp3
    ```
 
-3. Using Python directly
-
-   **Ubuntu/Debian (Mac/Linux):**
-
-   ```bash
-   source .venv/bin/activate
-
-   ```
-
-   **WIndows (CMD):**
-
-   ```bash
-   .venv\Scripts\activate.bat
-   ```
-
-   **Start STT:**
-
-   ```bash
-   python main.py --audio english-voice-example.mp3
-   ```
-
-4. Advanced CLI Usage
+3. Advanced CLI Usage
 
    **Override specific settings:**
 
@@ -169,7 +208,7 @@ You can use this tool in two ways: **Web Interface** (easiest) or **Command Line
    --device auto
    ```
 
-5. CLI Command Line Arguments
+4. CLI Command Line Arguments
 
    ```bash
    python main.py [OPTIONS]
@@ -184,64 +223,26 @@ You can use this tool in two ways: **Web Interface** (easiest) or **Command Line
    --device DEVICE       auto, cuda, or cpu (default from .env)
    ```
 
-### 🌐 Option 2: Web Interface (Recommended for beginners)
+5. Using Python directly
 
-This project now includes a user-friendly web interface powered by Gradio, perfect for non-technical users or quick transcriptions.
+   **Ubuntu/Debian (Mac/Linux):**
 
-### Launch Web Interface
+   ```bash
+   source .venv/bin/activate
 
-    ```bash
-    uv run python main.py --web
-    ```
+   ```
 
-This will start a web server (usually at `http://127.0.0.1:7860`) where you can:
+   **WIndows (CMD):**
 
-- **Upload audio files** via drag-and-drop or file picker
-- **Select Whisper model** from dropdown (tiny.en, base.en, small.en, medium.en, large, turbo)
-- **Choose language** (auto-detect or specific language)
-- **Pick output formats** (multiple selection: SRT, TXT, JSON, VTT, TSV)
-- **Set device preference** (auto, CUDA, CPU)
-- **Start Transcription** directly from the browser
+   ```bash
+   .venv\Scripts\activate.bat
+   ```
 
-### Web Interface Features
+   **Start STT:**
 
-- **Drag & Drop Audio Upload**: Upload audio files directly in your browser
-- **Live Configuration**: Adjust settings with dropdowns and checkboxes
-- **Real-time Feedback**: See transcription progress and results instantly
-- **Multi-format Download**: Get results in ZIP files for multiple formats
-- **Mobile-friendly**: Responsive design works on phones and tablets
-- **Same Configuration**: Uses your `.env` settings as defaults
-- **No installation needed** for end users - just share the web link
-
-### Interface Sections
-
-#### Audio Input Section
-
-- **Upload Area**: Supports MP3, WAV, M4A, FLAC, and more
-- **Sample Files**: Use provided english-voice-example.mp3 or bangla-voice-example.mp3
-
-#### Configuration Panel
-
-- **Whisper Model Size**: Choose from tiny.en (fast) to large (most accurate)
-- **Language**: Auto-detect or select from 15+ languages
-- **Task**: Transcribe in original language or translate to English
-- **Output Formats**: Select multiple formats (packaged in ZIP)
-- **Processing Device**: Auto-detect GPU or force CPU
-
-#### Results Section
-
-- **Status Display**: Real-time progress and configuration summary
-- **Output Location**: All files saved in timestamped `outputs/` folders
-
-### Advanced Web Interface Usage
-
-#### Public Access
-
-To share the interface out of your home network:
-
-`Set GRADIO_SHARE=true in .env`
-
-> **Note:** Use `--web` flag to launch the intuitive web interface - no other arguments needed!
+   ```bash
+   python main.py --audio english-voice-example.mp3
+   ```
 
 ### Dual Interface Benefits
 
@@ -258,15 +259,18 @@ To share the interface out of your home network:
 ### Project Structure
 
 ```
-whisper-voice-transcription/
-├── main.py              # Unified CLI & Web interface
-├── transcription_core.py# Shared transcription logic
-├── .env                 # Environment configuration
-├── inputs/              # Place audio files here
-├── outputs/             # Transcription outputs (auto-created)
-│   └── YYYYMMDD_HHMMSS/ # Timestamped folders
-├── pyproject.toml       # Project dependencies
-└── README.md            # This file
+whisper-voice-transcription/   # Repo Directory
+├── main.py                    # Unified CLI & Web interface
+├── transcription_core.py      # Shared transcription logic
+├── .env                       # Environment configuration
+├── inputs/                    # Place audio files here (optional)
+├── outputs/                   # Transcription outputs (auto-created)
+│   └── YYYYMMDD_HHMMSS/       # Timestamped folders per run
+├── pyproject.toml             # Project dependencies
+├── uv.lock                    # uv package lock file
+├── bangla-voice-example.mp3   # Sample audio (Bangla)
+├── english-voice-example.mp3  # Sample audio (English)
+└── README.md                  # This file
 ```
 
 ## ⚙️ Configuration
