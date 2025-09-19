@@ -44,7 +44,36 @@ This project provides a streamlined interface for transcribing audio files using
     ```
 
     **Windows:**
-    Download from [FFmpeg official website](https://ffmpeg.org/download.html)
+
+    **⚠️ IMPORTANT: FFmpeg is required for audio processing and commonly missing on Windows!**
+
+    **Option 1 - Direct Download (Recommended):**
+
+    1. Download from [FFmpeg Windows builds](https://www.gyan.dev/ffmpeg/builds/)
+    2. Extract the ZIP file (e.g., to `C:\ffmpeg`)
+    3. Add `C:\ffmpeg\bin` to your Windows PATH:
+       - Press `Win + R`, type `sysdm.cpl`, press Enter
+       - Click "Environment Variables"
+       - Under "System Variables", find and select "Path", click "Edit"
+       - Click "New" and add `C:\ffmpeg\bin`
+       - Click "OK" to close all dialogs
+    4. Restart your terminal/command prompt
+
+    **Option 2 - Package Managers:**
+
+    ```bash
+    # Using Chocolatey
+    choco install ffmpeg
+
+    # Using Winget
+    winget install FFmpeg
+    ```
+
+    **⚠️ Common Windows Issues:**
+
+    - If you get `[WinError 2] The system cannot find the file specified`, FFmpeg is not properly installed
+    - Make sure to restart your terminal after adding FFmpeg to PATH
+    - Test installation by running `ffmpeg -version` in Command Prompt
 
 2.  **Install UV (if not already installed):**
 
@@ -84,9 +113,19 @@ This project provides a streamlined interface for transcribing audio files using
    ```
 
 2. **Install dependencies using uv (recommended):**
+
    ```bash
    uv sync
    ```
+
+3. **🔧 Test your installation (especially Windows users):**
+
+   ```bash
+   # Check if FFmpeg is properly installed
+   uv run python check_ffmpeg.py
+   ```
+
+   If you see ✅ messages, you're ready to go! If you see ❌ errors, follow the FFmpeg installation guide above.
 
 ## 📁 Usage
 
@@ -430,6 +469,38 @@ pkill -f "python main.py --web"
 - Use GPU if available: ensure CUDA is properly installed
 - Choose a smaller model for faster processing
 - Check if other processes are using GPU resources
+
+### Windows-Specific Issues
+
+**❌ `[WinError 2] The system cannot find the file specified`:**
+
+This is the most common Windows error and means FFmpeg is not installed or not in PATH.
+
+**Solutions:**
+
+1. Install FFmpeg following the Windows instructions above
+2. Verify installation: open Command Prompt and run `ffmpeg -version`
+3. If still failing, restart your computer after PATH changes
+4. Check Windows Defender isn't blocking FFmpeg execution
+
+**❌ Permission denied errors:**
+
+- Run Command Prompt as Administrator
+- Check Windows Defender/antivirus isn't blocking the application
+- Ensure the `inputs` and `outputs` folders are writable
+
+**❌ Audio file upload issues in Web Interface:**
+
+- Try different audio formats (MP3, WAV, M4A)
+- Ensure file isn't corrupted
+- Check file size (very large files may timeout)
+- Use shorter audio clips for testing
+
+**💡 Windows Tips:**
+
+- Use Windows Terminal or PowerShell instead of old Command Prompt
+- Place audio files in the `inputs` folder to avoid path issues
+- Avoid special characters in file names
 
 ### GPU Troubleshooting
 

@@ -1,6 +1,8 @@
 import whisper
 import os
 import torch
+import subprocess
+import platform
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -78,6 +80,41 @@ def get_device(preferred_device=None):
             print(f"💻 Using CPU (no CUDA GPU detected)")
     return device
 
+def check_ffmpeg_availability():
+    """Check if FFmpeg is available and provide helpful error messages for Windows."""
+    import subprocess
+    import platform
+    
+    try:
+        # Try to run ffmpeg to check if it's available
+        subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True, timeout=10)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+        system = platform.system()
+        if system == "Windows":
+            error_msg = (
+                "❌ FFmpeg not found. This is required for audio processing.\n\n"
+                "🔧 Windows Installation Options:\n"
+                "1. Download FFmpeg from: https://ffmpeg.org/download.html\n"
+                "2. Extract and add to PATH, or\n"
+                "3. Use Chocolatey: choco install ffmpeg\n"
+                "4. Use Winget: winget install FFmpeg\n\n"
+                "After installation, restart your terminal/command prompt."
+            )
+        elif system == "Darwin":  # macOS
+            error_msg = (
+                "❌ FFmpeg not found. Install with: brew install ffmpeg"
+            )
+        else:  # Linux
+            error_msg = (
+                "❌ FFmpeg not found. Install with: sudo apt install ffmpeg"
+            )
+        
+        raise RuntimeError(error_msg)
+    except Exception as e:
+        # Other unexpected errors
+        raise RuntimeError(f"❌ Error checking FFmpeg: {str(e)}")
+
 def transcribe_audio_core(audio_path, model_name=None, language=None, task=None, formats=None, device=None):
     """
     Core transcription function that can be used by both CLI and Gradio.
@@ -93,6 +130,12 @@ def transcribe_audio_core(audio_path, model_name=None, language=None, task=None,
     Returns:
         dict: Contains output_dir, files, and metadata
     """
+    # Check FFmpeg availability first
+    try:
+        check_ffmpeg_availability()
+    except RuntimeError as e:
+        raise RuntimeError(str(e))
+    
     # Use defaults from environment if not specified
     model_name = model_name or os.getenv("WHISPER_MODEL", "small.en")
     language = language or os.getenv("WHISPER_LANGUAGE")
@@ -132,9 +175,23 @@ def transcribe_audio_core(audio_path, model_name=None, language=None, task=None,
         else:
             raise e
     
-    # Transcribe audio
+    # Transcribe audio with better error handling
     print(f"Starting transcription...")
-    result = model.transcribe(audio_path, language=language, task=task)
+    try:
+        result = model.transcribe(audio_path, language=language, task=task)
+    except Exception as e:
+        # Check if this looks like an FFmpeg error
+        error_str = str(e).lower()
+        if any(keyword in error_str for keyword in ['ffmpeg', 'file specified', 'winerror 2', 'cannot find']):
+            raise RuntimeError(
+                "❌ Audio processing failed. This is usually caused by missing FFmpeg.\n\n"
+                "🔧 Windows users: Install FFmpeg from https://ffmpeg.org/download.html\n"
+                "Make sure FFmpeg is added to your system PATH.\n\n"
+                f"Original error: {str(e)}"
+            )
+        else:
+            # Re-raise the original error if it's not FFmpeg-related
+            raise e
     segments = result["segments"]
     
     # Create outputs directory with date and time

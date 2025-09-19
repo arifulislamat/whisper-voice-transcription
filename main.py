@@ -341,7 +341,26 @@ def launch_gradio_interface():
             )
                 
         except Exception as e:
-            return f"❌ Error during transcription: {str(e)}", "", "", "", "", ""
+            error_msg = str(e)
+            
+            # Check if this is likely an FFmpeg-related error on Windows
+            if any(keyword in error_msg.lower() for keyword in ['winerror 2', 'file specified', 'ffmpeg', 'cannot find']):
+                detailed_error = (
+                    f"❌ Audio processing failed: {error_msg}\n\n"
+                    "🔧 This is usually caused by missing FFmpeg on Windows.\n\n"
+                    "📥 Quick Fix - Install FFmpeg:\n"
+                    "1. Download from: https://ffmpeg.org/download.html#build-windows\n"
+                    "2. Extract the ZIP file\n"
+                    "3. Add the 'bin' folder to your Windows PATH\n"
+                    "4. Restart your terminal/browser\n\n"
+                    "🚀 Alternative (using package managers):\n"
+                    "• Chocolatey: choco install ffmpeg\n"
+                    "• Winget: winget install FFmpeg\n\n"
+                    "💡 After installation, restart this application."
+                )
+                return detailed_error, "", "", "", "", ""
+            
+            return f"❌ Error during transcription: {error_msg}", "", "", "", "", ""
 
     # Create the Gradio interface
     with gr.Blocks(title="🎤 Whisper Voice Transcription") as interface:
