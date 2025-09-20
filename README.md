@@ -2,10 +2,6 @@
 
 A Python-based audio transcription tool (STT) using OpenAI's Whisper model with configurable output formats and automated file organization.
 
-## 🎯 Project Overview
-
-This project provides a streamlined interface for transcribing audio files using OpenAI's Whisper speech recognition model. It features a **unified entry point** that supports both CLI automation and web interface modes, with multiple output formats, automatic file organization with timestamps, environment-based configuration, and NVIDIA CUDA acceleration for faster processing.
-
 ### ✨ Features
 
 - **🌐 Web Interface**: User-friendly Gradio web UI for easy drag-and-drop transcription
@@ -100,8 +96,6 @@ This project provides a streamlined interface for transcribing audio files using
    > **Note**: To use above commend, first you will need to uncomment line number `29 to 46` in `pyproject.toml` file.
 
 ## 📁 Usage
-
-You can use this tool in two ways: **Web Interface** (easiest) or **Command Line** (for automation).
 
 ### 🌐 Option 1: Web Interface (Recommended for beginners)
 

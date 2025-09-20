@@ -1,63 +1,121 @@
 # Copilot Instructions for Whisper Voice Transcription
 
-## Project Architecture
+## Project Architecture & Data Flow
 
-This is a **single-script audio transcription tool** using OpenAI's Whisper model. The architecture is deliberately simple:
+This project is a **single-script, environment-driven audio transcription tool** using OpenAI's Whisper model. It is designed for simplicity, reliability, and ease of extension:
 
-- **`main.py`**: Core transcription logic with CLI interface
-- **`.env`**: Configuration defaults (overridable via CLI)
-- **`inputs/`**: Audio file staging area (optional - can transcribe from anywhere)
-- **`outputs/YYYYMMDD_HHMMSS/`**: Timestamped output folders with multiple formats
+- **`main.py`**: Unified CLI and Gradio web interface. Handles all user interaction, argument parsing, and workflow orchestration.
+- **`transcription_core.py`**: Core transcription logic, device selection, and output format handling. All format-specific logic is here.
+- **`.env`**: Central config for all defaults (model, language, device, formats, etc). CLI args always override `.env`.
+- **`inputs/`**: Audio file staging (optional, not required for CLI).
+- **`outputs/YYYYMMDD_HHMMSS/`**: Timestamped output folders, one per run, containing all requested formats.
 
-## Key Development Patterns
+**Data flow:**
 
-### Environment-First Configuration
+1. User provides audio (via CLI, web upload, or file picker)
+2. `main.py` parses config, launches transcription via `transcription_core.py`
+3. Output files are written to a new timestamped folder in `outputs/`
+4. Web UI and CLI both use the same core logic and output conventions
 
-All CLI arguments have `.env` defaults. The pattern is:
+## Critical Development Patterns
+
+### Environment-First, CLI-Override Configuration
+
+All CLI arguments default to `.env` values. Always use:
 
 ```python
 parser.add_argument("--model", default=os.getenv("WHISPER_MODEL", "small.en"))
 ```
 
-This allows users to set preferences in `.env` but override per-run. Always maintain this dual-source pattern.
+Never hardcode config defaults elsewhere.
 
-### Device Detection & Fallback Strategy
+### Device Detection & Fallback
 
-The `get_device()` function implements smart GPU/CPU selection:
+Use `get_device()` from `transcription_core.py`:
 
-- `auto`: CUDA → CPU fallback
-- `cuda`: Force GPU with CPU fallback on failure
+- `auto`: Prefer CUDA, fallback to CPU
+- `cuda`: Force GPU, fallback to CPU on error
 - `cpu`: Force CPU only
-
-**Critical**: Always wrap model loading in try/catch for CUDA fallback:
+  **Always** wrap model loading in try/except for CUDA fallback:
 
 ```python
 try:
-    model = whisper.load_model(args.model, device=device)
+    model = whisper.load_model(model_name, device=device)
 except Exception as e:
     if device == "cuda":
-        # Fallback to CPU logic
+        # Fallback to CPU
 ```
 
-### Output Format Architecture
+### Output Format Extension
 
-Each format (SRT, TXT, JSON, VTT, TSV) has its own `save_*()` function. When adding formats:
+To add a new output format:
 
-1. Add to `SUPPORTED_FORMATS` list
-2. Create `save_FORMAT()` function
-3. Add elif branch in main loop
-4. Update README format examples
+1. Add to `SUPPORTED_FORMATS` in `transcription_core.py`
+2. Implement `save_FORMAT()` in `transcription_core.py`
+3. Add to output logic in `transcribe_audio_core()`
+4. Update README with format example
 
-### Timestamped Output Organization
+### Timestamped Output Folders
 
-Outputs use `YYYYMMDD_HHMMSS` folders to prevent overwrites. Pattern:
+All outputs go to `outputs/YYYYMMDD_HHMMSS/` to avoid overwrites. Use:
 
 ```python
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 output_dir = os.path.join("outputs", timestamp)
 ```
 
-## Development Workflows
+### Web & CLI Parity
+
+Both interfaces use the same core logic and config. Web UI (Gradio) is in `main.py` and mirrors CLI options.
+
+## Developer Workflows
+
+### Install & Run
+
+- Install dependencies: `uv sync` (CPU) or `uv sync --extra cu128` (CUDA, after editing `pyproject.toml`)
+- Run CLI: `uv run python main.py --audio file.mp3`
+- Run Web UI: `uv run python main.py --web`
+
+### Audio File Handling
+
+- Audio can be anywhere for CLI (`--audio /path/to/file.mp3`)
+- Web UI saves uploads to `inputs/` and manages duplicates
+
+### Adding Languages
+
+- Update `WHISPER_LANGUAGES` in `.env` for dropdowns
+- Use `get_language_mapping()` in `main.py` for mapping
+
+### Error Handling
+
+- Device fallback is permissive (GPU errors → CPU)
+- File and format validation is strict: invalid files or formats are skipped with clear errors
+
+## Project-Specific Conventions
+
+- All config is `.env`-driven, never hardcoded
+- Output filenames match input: `audio.mp3` → `audio.srt`, `audio.txt`, etc.
+- All new formats must have a `save_FORMAT()`
+- Timestamps always use `YYYYMMDD_HHMMSS`
+- No global state: all logic is function-based
+
+## Integration Points
+
+- **Whisper**: Always load with explicit device
+- **PyTorch**: Used for CUDA detection, installed via Whisper
+- **FFmpeg**: Required for audio, must be installed system-wide
+- **Gradio**: Web UI only, not required for CLI
+
+## Example: Add a New Output Format
+
+1. Add to `SUPPORTED_FORMATS` in `transcription_core.py`
+2. Implement `save_newformat()`
+3. Add to output logic in `transcribe_audio_core()`
+4. Update README with example
+
+---
+
+For more, see `README.md` for usage, troubleshooting, and advanced examples.
 
 ### Package Management (uv-based)
 
