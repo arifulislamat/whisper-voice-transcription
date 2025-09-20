@@ -83,10 +83,21 @@ This project provides a streamlined interface for transcribing audio files using
    cd whisper-voice-transcription
    ```
 
-2. **Install dependencies using uv (recommended):**
+2. **Install dependencies using uv:**
+
+   **For CPU only mode: Default:**
+
    ```bash
    uv sync
    ```
+
+   **For Linux/Windows with NVIDIA GPU (CUDA 12.8):**
+
+   ```bash
+   uv sync --extra cu128
+   ```
+
+   > **Note**: To use above commend, first you will need to uncomment line number `29 to 46` in `pyproject.toml` file.
 
 ## 📁 Usage
 
@@ -98,9 +109,9 @@ This project now includes a user-friendly web interface powered by Gradio, perfe
 
 ### Launch Web Interface
 
-    ```bash
-    uv run python main.py --web
-    ```
+```bash
+uv run python main.py --web
+```
 
 This will start a web server (usually at `http://127.0.0.1:7860`) where you can:
 

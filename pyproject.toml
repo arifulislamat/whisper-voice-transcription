@@ -1,7 +1,23 @@
+# Configuration: Change Pytorch version here (e.g., cu121, cu118, cu124, cu128, cu129)
+# Available versions: https://download.pytorch.org/whl/
 [project]
-name = "uv-whisper-py13"
+name = "whisper-voice-transcription"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Python-based audio transcription tool (STT) using OpenAI's Whisper model with configurable output formats and automated file organization."
+authors = [
+    { name = "Ariful Islam", email = "ariful@firora.com" }
+]
+license = { text = "MIT" }
+keywords = ["whisper", "transcription", "speech-to-text", "audio", "ai"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -9,3 +25,22 @@ dependencies = [
     "openai-whisper>=20250625",
     "python-dotenv>=1.1.1",
 ]
+
+# [project.optional-dependencies]
+# cu128 = [
+#   "torch>=2.7.0",
+#   "torchvision>=0.22.0",
+# ]
+
+# [tool.uv.sources]
+# torch = [
+#   { index = "pytorch-cu128", extra = "cu128" },
+# ]
+# torchvision = [
+#   { index = "pytorch-cu128", extra = "cu128" },
+# ]
+
+# [[tool.uv.index]]
+# name = "pytorch-cu128"
+# url = "https://download.pytorch.org/whl/cu128"
+# explicit = true
