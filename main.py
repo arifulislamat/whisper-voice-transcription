@@ -555,12 +555,14 @@ def launch_gradio_interface():
             outputs=[txt_preview, srt_preview, vtt_preview, tsv_preview, json_preview, activity_status]
         )
         
-        gr.Markdown("---")
-        gr.Markdown("### 💡 Tips:")
-        gr.Markdown("• **English audio**: Use `.en` models for better performance")
-        gr.Markdown("• **Limited GPU memory**: Start with `tiny` or `base` models")
-        gr.Markdown("• **Best quality**: Use `large` or `turbo` models")
-        gr.Markdown("• **Multiple formats**: Select multiple checkboxes to get a zip file")
+        # Footer
+        gr.Markdown("""
+        ---
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Powered by Whisper | PyTorch | Python3.13 | UV</span>
+            <span><a href="https://arifulislamat.com" target="_blank" style="color: #ff6b35; text-decoration: none;">Ariful Islam</a></span>
+        </div>
+        """)
 
     print("🌐 Starting Gradio web interface...")
     print("📱 The interface will be available in your browser")
