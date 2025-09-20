@@ -28,49 +28,49 @@ This project provides a streamlined interface for transcribing audio files using
 <details>
 <summary><strong>✋🏽 Only if you don't have it already</strong> (click to expand)</summary>
 
-1.  **Install FFmpeg (if not already installed):**
+1. **Install FFmpeg (if not already installed):**
 
-    **macOS:**
+   macOS:
 
-    ```bash
-    brew install ffmpeg
-    ```
+   ```bash
+   brew install ffmpeg
+   ```
 
-    **Ubuntu/Debian:**
+   Ubuntu/Debian:
 
-    ```bash
-    sudo apt update
-    sudo apt install ffmpeg
-    ```
+   ```bash
+   sudo apt update
+   sudo apt install ffmpeg
+   ```
 
-    **Windows:**
-    Download from [FFmpeg official website](https://ffmpeg.org/download.html)
+   Windows:
+   Download from [FFmpeg official website](https://ffmpeg.org/download.html)
 
-2.  **Install UV (if not already installed):**
+2. **Install UV (if not already installed):**
 
-    **macOS:**
+   macOS:
 
-    ```bash
-    brew install uv
-    ```
+   ```bash
+   brew install uv
+   ```
 
-    **OR**
+   OR
 
-    ```bash
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
 
-    **Ubuntu/Debian:**
+   Ubuntu/Debian:
 
-    ```bash
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
 
-    **Windows:**
+   Windows:
 
-    ```bash
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
+   ```powershell
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
 
 </details>
 
@@ -85,13 +85,13 @@ This project provides a streamlined interface for transcribing audio files using
 
 2. **Install dependencies using uv:**
 
-   **For CPU only mode: Default:**
+   For CPU only mode (Default):
 
    ```bash
    uv sync
    ```
 
-   **For Linux/Windows with NVIDIA GPU (CUDA 12.8):**
+   For Linux/Windows with NVIDIA GPU (CUDA 12.8):
 
    ```bash
    uv sync --extra cu128
@@ -107,7 +107,7 @@ You can use this tool in two ways: **Web Interface** (easiest) or **Command Line
 
 This project now includes a user-friendly web interface powered by Gradio, perfect for non-technical users or quick transcriptions.
 
-### Launch Web Interface
+#### Launch Web Interface
 
 ```bash
 uv run python main.py --web
@@ -122,138 +122,77 @@ This will start a web server (usually at `http://127.0.0.1:7860`) where you can:
 - **Set device preference** (auto, CUDA, CPU)
 - **Start Transcription** directly from the browser
 
-### Web Interface Features
-
-- **Drag & Drop Audio Upload**: Upload audio files directly in your browser
-- **Live Configuration**: Adjust settings with dropdowns and checkboxes
-- **Real-time Feedback**: See transcription progress and results instantly
-- **Multi-format Download**: Get results in ZIP files for multiple formats
-- **Mobile-friendly**: Responsive design works on phones and tablets
-- **Same Configuration**: Uses your `.env` settings as defaults
-- **No installation needed** for end users - just share the web link
-
-### Interface Sections
-
-#### Audio Input Section
-
-- **Upload Area**: Supports MP3, WAV, M4A, FLAC, and more
-- **Sample Files**: Use provided english-voice-example.mp3 or bangla-voice-example.mp3 ( need to copy them into inputs dir)
-
-#### Configuration Panel
-
-- **Whisper Model Size**: Choose from tiny.en (fast) to large (most accurate)
-- **Language**: Auto-detect or select from 15+ languages
-- **Task**: Transcribe in original language or translate to English
-- **Output Formats**: Select multiple formats (packaged in ZIP)
-- **Processing Device**: Auto-detect GPU or force CPU
-
-#### Results Section
-
-- **Status Display**: Real-time progress and configuration summary
-- **Output Location**: All files saved in timestamped `outputs/` folders
-
-### Advanced Web Interface Usage
-
-#### Public Access
-
-To share the interface out of your home network:
-
-`Set GRADIO_SHARE=true in .env`
-
-> **Note:** Use `--web` flag to launch the intuitive web interface - no other arguments needed!
-
 ### ⌨️ Option 2: CLI - Command Line Interface
 
-1. Prepare Audio Files
+#### Prepare Audio Files
 
-   Place your audio files in the `inputs/` folder:
+Place your audio files in the `inputs/` folder:
 
-   ```bash
-   mkdir inputs
-   cp english-voice-example.mp3 inputs/
-   ```
+```bash
+mkdir inputs
+cp english-voice-example.mp3 inputs/
+```
 
-2. Basic CLI Usage
+#### Basic CLI Usage
 
-   **Using uv (simplest):**
+Using uv (simplest):
 
-   ```bash
-   uv run python main.py --audio english-voice-example.mp3
-   ```
+```bash
+uv run main.py --audio english-voice-example.mp3
+```
 
-3. Advanced CLI Usage
+#### Advanced CLI Usage
 
-   **Override specific settings:**
+Override specific settings:
 
-   ```bash
-   uv run python main.py --audio english-voice-example.mp3 --model large --language es
-   ```
+```bash
+uv run main.py --audio english-voice-example.mp3 --model large --language es
+```
 
-   **Multiple output formats:**
+Multiple output formats:
 
-   ```bash
-   uv run python main.py --audio english-voice-example.mp3 --formats srt,txt,json,vtt
-   ```
+```bash
+uv run main.py --audio english-voice-example.mp3 --formats srt,txt,json,vtt
+```
 
-   **Translation task:**
+Translation task:
 
-   ```bash
-   uv run python main.py --audio spanish-audio.mp3 --task translate --language es
-   ```
+```bash
+uv run main.py --audio spanish-audio.mp3 --task translate --language es
+```
 
-   **Force GPU/CPU usage:**
+Force GPU/CPU usage:
 
-   ```bash
-   uv run python main.py --audio audio.mp3 --device cuda  # Force CUDA
-   uv run python main.py --audio audio.mp3 --device cpu   # Force CPU
-   ```
+```bash
+uv run main.py --audio audio.mp3 --device cuda  # Force CUDA
+uv run main.py --audio audio.mp3 --device cpu   # Force CPU
+```
 
-   **Complete configuration override:**
+Complete configuration override:
 
-   ```bash
-   uv run python main.py --audio audio-file.wav \
-   --model medium \
-   --language bn \
-   --task transcribe \
-   --formats srt,txt \
-   --device auto
-   ```
+```bash
+uv run python main.py --audio audio-file.wav \
+--model medium \
+--language bn \
+--task transcribe \
+--formats srt,txt \
+--device auto
+```
 
-4. CLI Command Line Arguments
+#### CLI Command Line Arguments
 
-   ```bash
-   python main.py [OPTIONS]
+```text
+python main.py [OPTIONS]
 
-   Options:
-   --web                 Launch web interface instead of CLI mode
-   --audio FILEPATH      Path to audio file (required for CLI mode)
-   --model MODEL         Whisper model size (default from .env)
-   --language CODE       Language code (default from .env or auto-detect)
-   --task TASK           transcribe or translate (default from .env)
-   --formats FORMATS     Comma-separated formats (default from .env)
-   --device DEVICE       auto, cuda, or cpu (default from .env)
-   ```
-
-5. Using Python directly
-
-   **Ubuntu/Debian (Mac/Linux):**
-
-   ```bash
-   source .venv/bin/activate
-
-   ```
-
-   **WIndows (CMD):**
-
-   ```bash
-   .venv\Scripts\activate.bat
-   ```
-
-   **Start STT:**
-
-   ```bash
-   python main.py --audio english-voice-example.mp3
-   ```
+Options:
+--web                 Launch web interface instead of CLI mode
+--audio FILEPATH      Path to audio file (required for CLI mode)
+--model MODEL         Whisper model size (default from .env)
+--language CODE       Language code (default from .env or auto-detect)
+--task TASK           transcribe or translate (default from .env)
+--formats FORMATS     Comma-separated formats (default from .env)
+--device DEVICE       auto, cuda, or cpu (default from .env)
+```
 
 ### Dual Interface Benefits
 
@@ -269,7 +208,7 @@ To share the interface out of your home network:
 
 ### Project Structure
 
-```
+```text
 whisper-voice-transcription/   # Repo Directory
 ├── main.py                    # Unified CLI & Web interface
 ├── transcription_core.py      # Shared transcription logic
@@ -296,6 +235,7 @@ WHISPER_LANGUAGE=en
 WHISPER_TASK=transcribe
 WHISPER_FORMATS=srt,txt,json
 WHISPER_DEVICE=auto
+GRADIO_SHARE=false
 ```
 
 ## 🎵 Whisper Models
@@ -317,39 +257,6 @@ WHISPER_DEVICE=auto
 - **Limited VRAM**: Start with `tiny` or `base`
 - **Best quality**: Use `large` or `turbo`
 - **Balanced**: `small.en` for English, `small` for multilingual
-
-## 🏞️ GPU Acceleration
-
-### NVIDIA CUDA Support
-
-For faster transcription with NVIDIA GPUs:
-
-1. **Install CUDA-enabled PyTorch:**
-
-   ```bash
-   uv add torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-   ```
-
-2. **The tool will automatically detect and use your GPU:**
-   ```bash
-   🚀 CUDA GPU detected: GeForce RTX 4090 (24.0GB)
-   ```
-
-### Device Selection
-
-| Device | Usage                                | Performance    |
-| ------ | ------------------------------------ | -------------- |
-| `auto` | Automatic detection (CUDA → CPU)     | Best available |
-| `cuda` | Force NVIDIA GPU (falls back to CPU) | Fastest        |
-| `cpu`  | Force CPU only                       | Reliable       |
-
-### Performance Comparison
-
-| Model   | CPU (M2 Max)  | RTX 4090     | Speedup |
-| ------- | ------------- | ------------ | ------- |
-| `tiny`  | 2x realtime   | 15x realtime | 7.5x    |
-| `small` | 1x realtime   | 8x realtime  | 8x      |
-| `large` | 0.3x realtime | 3x realtime  | 10x     |
 
 ## 🗃️ Output Formats
 
@@ -404,17 +311,17 @@ start	end	speaker	text
 
 ### Common Issues
 
-**"Audio file not found" error:**
+"Audio file not found" error:
 
 - Check the file path is correct
 - Ensure the file exists and is accessible
 
-**FFmpeg errors:**
+FFmpeg errors:
 
 - Install FFmpeg using the instructions above
 - Ensure FFmpeg is in your system PATH
 
-**Web interface won't start:**
+Web interface won't start:
 
 ```bash
 # Check if port 7860 is available
@@ -424,19 +331,19 @@ lsof -i :7860
 pkill -f "python main.py --web"
 ```
 
-**Web upload fails:**
+Web upload fails:
 
 - Check file format is supported (MP3, WAV, M4A, FLAC, etc.)
 - Ensure file size is reasonable (<500MB recommended)
 - Verify browser supports file uploads
 
-**Out of memory errors:**
+Out of memory errors:
 
 - Use a smaller model (`tiny`, `base`, `small`)
 - Close other applications to free up RAM/VRAM
 - Use CPU mode: `--device cpu`
 
-**Slow transcription:**
+Slow transcription:
 
 - Use GPU if available: ensure CUDA is properly installed
 - Choose a smaller model for faster processing
@@ -444,17 +351,39 @@ pkill -f "python main.py --web"
 
 ### GPU Troubleshooting
 
-**CUDA not detected:**
+CUDA not detected:
 
 ```bash
 # Check CUDA installation
 nvidia-smi
+```
 
+```python
 # Check PyTorch CUDA support
 python -c "import torch; print(torch.cuda.is_available())"
 ```
 
-**CUDA out of memory:**
+### Using Python directly
+
+Ubuntu/Debian (Mac/Linux):
+
+```bash
+source .venv/bin/activate
+```
+
+Windows (CMD):
+
+```cmd
+.venv\Scripts\activate.bat
+```
+
+Start STT:
+
+```bash
+python main.py --audio english-voice-example.mp3
+```
+
+CUDA out of memory:
 
 - Use smaller models (`tiny`, `base`, `small`)
 - Reduce batch size by processing shorter audio clips
