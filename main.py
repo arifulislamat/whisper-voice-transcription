@@ -33,23 +33,27 @@ def save_audio_to_inputs(audio_file):
     """Save uploaded audio file to inputs folder."""
     if audio_file is None:
         return "❌ No audio file provided."
-    
     try:
+        import shutil
+        import tempfile
+        from pathlib import Path
+        import os
         # Ensure inputs directory exists
         os.makedirs("inputs", exist_ok=True)
-        
-        # Get the original filename from the audio file path
-        from pathlib import Path
-        
+        # If audio_file is a tuple (filepath, sample_rate), handle Gradio's new format
+        if isinstance(audio_file, tuple) and len(audio_file) == 2 and isinstance(audio_file[0], str):
+            audio_file = audio_file[0]
         source_path = Path(audio_file)
         filename = source_path.name
         
+        # Simple rename: if filename starts with "audio", change to "record"
+        if filename.lower().startswith("audio"):
+            extension = Path(filename).suffix or ".wav"
+            filename = f"audio-record{extension}"
         # If the filename doesn't have an extension, add .wav
         if not filename.lower().endswith(('.mp3', '.wav', '.m4a', '.flac', '.ogg', '.wma', '.aac')):
             filename += '.wav'
-        
         destination_path = os.path.join("inputs", filename)
-        
         # Handle duplicate filenames
         counter = 1
         base_name = Path(filename).stem
@@ -58,12 +62,8 @@ def save_audio_to_inputs(audio_file):
             new_filename = f"{base_name}_{counter}{extension}"
             destination_path = os.path.join("inputs", new_filename)
             counter += 1
-        
-        # Copy the file
-        shutil.copy2(audio_file, destination_path)
-        
+        shutil.copy2(str(source_path), destination_path)
         return f"✅ Saved audio as: {Path(destination_path).name}"
-    
     except Exception as e:
         return f"❌ Error saving audio: {str(e)}"
 
@@ -73,10 +73,8 @@ def save_audio_and_update_dropdown(audio_file):
     
     # Save the audio file
     status = save_audio_to_inputs(audio_file)
-    
     # Get updated choices
     updated_choices = get_audio_files_list()
-    
     # Extract the saved filename from status message
     selected_filename = None
     if status.startswith("✅ Saved audio as:"):
@@ -86,7 +84,9 @@ def save_audio_and_update_dropdown(audio_file):
             if choice.startswith(saved_filename):
                 selected_filename = choice
                 break
-    
+    # If not found, just select the first available file
+    if not selected_filename and updated_choices and updated_choices[0] != "No audio files found - upload or record something first":
+        selected_filename = updated_choices[0]
     return status, gr.Dropdown(choices=updated_choices, value=selected_filename)
 
 def get_audio_files_list():
@@ -364,6 +364,7 @@ def launch_gradio_interface():
                 
                 # File management components
                 with gr.Row():
+                    save_recording_btn = gr.Button("💾 Save Recording", size="sm", variant="primary")
                     refresh_btn = gr.Button("🔄 Refresh List", size="sm")
                     delete_btn = gr.Button("🗑️ Delete Selected", size="sm", variant="secondary")
                 
@@ -517,6 +518,12 @@ def launch_gradio_interface():
         )
         
         # Connect file management buttons
+        save_recording_btn.click(
+            fn=save_audio_and_update_dropdown,
+            inputs=audio_input,
+            outputs=[file_status, selected_file_input]
+        )
+        
         refresh_btn.click(
             fn=lambda: gr.Dropdown(choices=get_audio_files_list()),
             outputs=selected_file_input
