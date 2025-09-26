@@ -94,6 +94,9 @@ A Python-based audio transcription tool (STT) using OpenAI's Whisper model with 
    ```
 
    > **Note**: To use above commend, first you will need to uncomment line number `29 to 46` in `pyproject.toml` file.
+   
+### App Demo
+[![Watch the video](https://img.youtube.com/vi/No-bvxYfcMk/maxresdefault.jpg)](https://youtu.be/No-bvxYfcMk?si=pjuq8ltV-yEvtUYD)
 
 ## 📁 Usage
 
